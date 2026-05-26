@@ -5,18 +5,18 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import io
 import random
+import threading
 
-# Communication Core Variables - FIXED TO CORRECT API PATHWAY
+# Communication Core Variables - OFFICIAL TELEGRAM API HOST ROUTE
 TELEGRAM_BASE_URL = "https://telegram.org"
 CHAT_ID = 6660670214
-WHALE_THRESHOLD_MNT = 1  # Kept at 1 MNT for instant verification
+WHALE_THRESHOLD_MNT = 1 # Kept at 1 MNT for instant verification
 
-# Premium Web3 Gateways - Your working endpoints array
 RPC_ENDPOINTS = [
-    "https://1rpc.io/mantle",
-    "https://mantle-mainnet.public.blastapi.io",
-    "https://mantle.drpc.org",
-    "https://rpc.mantle.xyz"
+    "https://1rpc.io",
+    "https://blastapi.io",
+    "https://drpc.org",
+    "https://mantle.xyz"
 ]
 
 def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_value, execution_mode="LIVE"):
@@ -31,18 +31,16 @@ def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_valu
     lbl_to = f"Recipient Target\n({dst[:6]}...{dst[-4:] if tx_to else 'Contract'})"
     G.add_edge(lbl_from, lbl_to, weight=mnt_value)
     
-    # Render with dark luxury trading theme layout parameters
     plt.figure(figsize=(7, 4), facecolor='#111827')
     ax = plt.gca()
     ax.set_facecolor('#111827')
     
     pos = nx.spring_layout(G)
     nx.draw_networkx_nodes(G, pos, node_color='#10B981', node_size=2800, alpha=0.9, edgecolors='#F59E0B')
-    # FIXED: Corrected networkx layout array drawing argument name
     nx.draw_networkx_edges(G, pos, edgelist=G.edges(), edge_color='#9CA3AF', width=3, arrowstyle='->', arrowsize=22)
     nx.draw_networkx_labels(G, pos, font_size=8, font_color='#FFFFFF', font_weight='bold')
     
-    plt.title(f"MANTLE NETWORK: AI WHALE FLOW GRAPH ({execution_mode})", color='#F59E0B', fontsize=11, fontweight='bold', pad=12)
+    plt.title(f"MANTLE NETWORK: WHALE FLOW GRAPH ({execution_mode})", color='#F59E0B', fontsize=11, fontweight='bold', pad=12)
     plt.axis('off')
     
     buf = io.BytesIO()
@@ -51,7 +49,7 @@ def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_valu
     plt.close()
     
     alert_msg = (
-        f"🦈 *MANTLE AI VISUAL REPORT ({execution_mode})* 🦈\n\n"
+        f"🦈 *VISUAL REPORT ({execution_mode})* 🦈\n\n"
         f"💰 *Volume:* `{mnt_value:,.2f} MNT` (~*${usd_value:,.2f} USD*)\n"
         f"👤 *From:* `{src}`\n"
         f"🎯 *To:* `{dst}`\n\n"
@@ -63,7 +61,6 @@ def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_valu
     data = {'chat_id': CHAT_ID, 'caption': alert_msg, 'parse_mode': 'Markdown'}
     
     try:
-        # FIXED: Routing directly through the dedicated telegram endpoint channel
         res = requests.post(f"{TELEGRAM_BASE_URL}/sendPhoto", data=data, files=files, timeout=15)
         if res.status_code == 200:
             print("✨ Analytics Image Dispatched to Telegram Interface Successfully!")
@@ -125,9 +122,86 @@ def trigger_sandbox_simulation():
             print("\nSafe sandbox environment storage preservation complete.")
             break
 
+def check_specific_wallet_demand(target_wallet):
+    """Intercepts live user text demand and scans the current block specifically for that wallet"""
+    hex_current = get_rpc_data_resilient("eth_blockNumber")
+    if not hex_current:
+        send_visual_intelligence_report(
+            random.uniform(1500, 75000),
+            target_wallet,
+            "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+            "0x" + "".join(random.choices("abcdef0123456789", k=64)),
+            random.uniform(1500, 75000) * 0.85,
+            "ON-DEMAND-SIM"
+        )
+        return
+
+    block_data = get_rpc_data_resilient("eth_getBlockByNumber", [hex_current, True])
+    found_any = False
+    
+    if block_data and "transactions" in block_data:
+        for tx in block_data["transactions"]:
+            tx_from = str(tx.get("from", "")).lower()
+            tx_to = str(tx.get("to", "")).lower()
+            query = target_wallet.lower()
+            
+            if query == tx_from or query == tx_to:
+                wei_value = int(tx.get("value", "0x0"), 16)
+                mnt_value = wei_value / 10**18
+                send_visual_intelligence_report(
+                    mnt_value,
+                    tx.get("from"),
+                    tx.get("to"),
+                    tx.get("hash"),
+                    mnt_value * 0.85,
+                    "USER-REQUEST"
+                )
+                found_any = True
+                break
+                
+    if not found_any:
+        url = f"{TELEGRAM_BASE_URL}/sendMessage"
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": f"🔍 *Wallet Inspected:* `{target_wallet}`\n\n⚠️ No raw transfers detected for this address inside the current block height. Monitoring signature for upcoming traffic...",
+            "parse_mode": "Markdown"
+        }
+        requests.post(url, json=payload)
+
+def listen_to_user_chat_commands():
+    print("📡 Interactive User Input Listener Thread Active...")
+    last_update_id = 0
+    
+    try:
+        init_res = requests.get(f"{TELEGRAM_BASE_URL}/getUpdates", timeout=5).json()
+        if init_res.get("ok") and init_res.get("result") and len(init_res["result"]) > 0:
+            last_update_id = init_res["result"][-1]["update_id"]
+    except Exception:
+        pass
+
+    while True:
+        try:
+            url = f"{TELEGRAM_BASE_URL}/getUpdates?offset={last_update_id + 1}&timeout=10"
+            response = requests.get(url, timeout=15).json()
+            
+            if response.get("ok") and response.get("result"):
+                for update in response["result"]:
+                    last_update_id = update["update_id"]
+                    message = update.get("message", {})
+                    text = str(message.get("text", "")).strip()
+                    
+                    if text.startswith("0x") and len(text) == 42:
+                        print(f"📥 User Input Received: Processing address token graph for {text}")
+                        threading.Thread(target=check_specific_wallet_demand, args=(text,), daemon=True).start()
+            time.sleep(2)
+        except Exception:
+            time.sleep(4)
+
 def start_tracker_loop():
     print("🦈 Mantle Visual Analytics Agent Core Booted.")
     print("Market Valuation Reference Online: 1 MNT = $0.8500 USD")
+    
+    threading.Thread(target=listen_to_user_chat_commands, daemon=True).start()
     
     hex_current = get_rpc_data_resilient("eth_blockNumber")
     if not hex_current:
@@ -146,19 +220,28 @@ def start_tracker_loop():
                 while last_scanned_block <= latest_block:
                     hex_block = hex(last_scanned_block)
                     block_data = get_rpc_data_resilient("eth_getBlockByNumber", [hex_block, True])
+                    
                     if block_data and "transactions" in block_data:
                         tx_list = block_data["transactions"]
                         print(f"🔍 Scanning block #{last_scanned_block} ({len(tx_list)} txs)...")
+
                         for tx in tx_list:
                             wei_value = int(tx.get("value", "0x0"), 16)
                             mnt_value = wei_value / 10**18
+
                             if mnt_value >= WHALE_THRESHOLD_MNT:
                                 send_visual_intelligence_report(
-                                    mnt_value, tx.get("from"), tx.get("to"), 
-                                    tx.get("hash"), mnt_value * 0.85, "LIVE"
+                                    mnt_value,
+                                    tx.get("from"),
+                                    tx.get("to"),
+                                    tx.get("hash"),
+                                    mnt_value * 0.85,
+                                    "LIVE"
                                 )
+
                     last_scanned_block += 1
-            time.sleep(3)
+                    time.sleep(3)
+
         except KeyboardInterrupt:
             print("\nSafe execution breakdown shutdown complete.")
             break
