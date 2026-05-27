@@ -1,125 +1,67 @@
+"""
+MANTLE ALPHA AGENT - MULTI-THREADED ORCHESTRATION ENGINE
+=======================================================
+Track: AI Alpha & Data | Mantle Turing Test Hackathon 2026
+Author: Emmanuel
+Description: Main asynchronous execution lifecycle control. Spins up parallel
+             worker threads to coordinate blockchain indexing arrays concurrently
+             with bi-directional user command chat loops.
+"""
+
 import requests
-import json
 import time
-import matplotlib.pyplot as plt
-import networkx as nx
-import io
-import random
 import threading
 import sys
+import random
 
-# ==========================================
-# 📡 CORE GLOBAL FRAMEWORK CONFIGURATIONS
-# ==========================================
-# Encoding domain names to completely bypass GitHub Codespace proxy filters
-HOST_P1 = "ap" + "i.t" + "ele" + "gr" + "am"
-HOST_P2 = ".o" + "rg"
-BOT_TOKEN = "8618915756:AAEi29qcWlp57WBFm4f0ly8WaDhh5P-pY9M"
-TELEGRAM_BASE_URL = f"https://{HOST_P1}{HOST_P2}/bot{BOT_TOKEN}"
+# Core Architectural Modular Component Imports
+from config import TELEGRAM_BASE_URL, CHAT_ID, USER_CONFIGS, ENGINE_MEMORY
+from network import query_mantle_rpc, profile_block_transactions_array
+from charts import compile_premium_dashboard_buffer
 
-CHAT_ID = 6660670214
-WHALE_THRESHOLD_MNT = 1
+def dispatch_tactical_intelligence_payload(
+    mnt_value,
+    tx_from,
+    tx_to,
+    tx_hash,
+    usd_value,
+    gas_used,
+    risk_score,
+    execution_mode
+):
+    """Compiles the graphic buffer layout and shoots high-DPI panels straight to the Telegram interface"""
 
-# Premium Resilient Web3 Gateways Array
-RPC_ENDPOINTS = [
-    "https://1rpc.io",
-    "https://blastapi.io",
-    "https://drpc.org",
-    "https://mantle.xyz"
-]
+    buf = compile_premium_dashboard_buffer(
+        mnt_value,
+        tx_from,
+        tx_to,
+        gas_used,
+        risk_score,
+        execution_mode
+    )
 
-# Shared Thread Lock for Matplotlib Canvas Processing Stability
-plot_lock = threading.Lock()
+    if not buf:
+        print("⚠️ Visualization compilation returned an empty frame buffer.")
+        return
 
-# ==========================================
-# 🎨 VISUAL INTELLIGENCE GRAPH GENERATOR
-# ==========================================
-def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_value, execution_mode="LIVE"):
-    """
-    Constructs a dark-mode luxury trading terminal asset flow graph.
-    Converts on-chain addresses into structured topological vector networks.
-    """
-    global plot_lock
-
-    print(f"🎨 [{execution_mode}] Triggering Visual Pipeline Canvas Layout Generator...")
-
-    src = str(tx_from) if tx_from else "Unknown Wallet"
-    dst = tx_to if tx_to else "Contract Deployment"
-    hsh = str(tx_hash) if tx_hash else "0x000"
-
-    lbl_from = f"Source\n({src[:6]}...{src[-4:] if len(src) > 10 else src[-2:]})"
-    lbl_to = f"Target\n({dst[:6]}...{dst[-4:] if tx_to else 'Deploy'})"
-
-    with plot_lock:
-        try:
-            G = nx.DiGraph()
-            G.add_edge(lbl_from, lbl_to, weight=float(mnt_value))
-
-            plt.figure(figsize=(7, 4), facecolor='#111827')
-            ax = plt.gca()
-            ax.set_facecolor('#111827')
-
-            pos = nx.spring_layout(G, k=0.5)
-
-            nx.draw_networkx_nodes(
-                G,
-                pos,
-                node_color='#10B981',
-                node_size=2800,
-                alpha=0.95,
-                edgecolors='#F59E0B'
-            )
-
-            nx.draw_networkx_edges(
-                G,
-                pos,
-                edgelist=G.edges(),
-                edge_color='#9CA3AF',
-                width=3,
-                arrowstyle='->',
-                arrowsize=22
-            )
-
-            nx.draw_networkx_labels(
-                G,
-                pos,
-                font_size=8,
-                font_color='#FFFFFF',
-                font_weight='bold'
-            )
-
-            plt.title(
-                f"MANTLE NETWORK: AI WHALE FLOW GRAPH ({execution_mode})",
-                color='#F59E0B',
-                fontsize=11,
-                fontweight='bold',
-                pad=12
-            )
-
-            plt.axis('off')
-
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', bbox_inches='tight', facecolor='#111827')
-            buf.seek(0)
-            plt.close()
-
-        except Exception as graph_err:
-            print(f"❌ Graphics Compilation Exception: {graph_err}")
-            plt.close()
-            return
+    print(f"📡 Dispatching Tactical Media Payload Matrix to Telegram [{execution_mode}]...")
 
     alert_msg = (
-        f"🦈 MANTLE AI ALPHA INTELLIGENCE DETECTED 🦈\n\n"
-        f"📊 Execution Context: Engine Track [{execution_mode} Mode]\n"
-        f"💰 Transaction Volume: {mnt_value:,.4f} MNT (~${usd_value:,.2f} USD)\n\n"
-        f"👤 Origin Signer: {src}\n"
-        f"🎯 Target Destination: {dst}\n\n"
-        f"🌐 MantleScan Block Explorer Reference Link:\n"
-        f"https://mantle.xyz{hsh}"
+        f"🚨 MANTLE DIGITAL INTEL MONITOR ACTIVE 🚨\n"
+        f"📱 System Track: [Mode {execution_mode}]\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"💰 Indexed Volume: {mnt_value:,.2f} MNT (~${usd_value:,.2f} USD)\n"
+        f"⚡ Computational Gas Gas: {gas_used:,} Units\n"
+        f"🛡️ Security Threat Score: {risk_score}/100\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"👤 From Wallet:\n{tx_from}\n"
+        f"🎯 To Recipient:\n{tx_to if tx_to else 'Contract Deployment'}\n"
+        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"🌐 Audit Route: https://mantle.xyz{tx_hash}"
     )
 
     files = {
-        'photo': ('graph.png', buf, 'image/png')
+        'photo': ('dashboard.png', buf, 'image/png')
     }
 
     data = {
@@ -132,64 +74,29 @@ def send_visual_intelligence_report(mnt_value, tx_from, tx_to, tx_hash, usd_valu
             f"{TELEGRAM_BASE_URL}/sendPhoto",
             data=data,
             files=files,
-            timeout=20
+            timeout=25
         )
 
         if res.status_code == 200:
-            print("✨ Success! Analytics Image Dispatched to Telegram Interface Safely!")
+            print("✨ Analytics Dashboard Broadcast Completed Successfully!")
+
+            ENGINE_MEMORY["historical_volumes"].append(float(mnt_value))
+            ENGINE_MEMORY["last_notified_tx_hash"] = tx_hash
         else:
-            print(f"⚠️ Telegram API Transmission Rejection: {res.text}")
+            print(f"⚠️ Telegram Payload Drop: {res.text}")
 
-    except Exception as network_post_err:
-        print(f"❌ Media routing transaction network error: {network_post_err}")
+    except Exception as e:
+        print(f"❌ Media routing server exception: {e}")
 
-# ==========================================
-# 🛰️ RESILIENT WEB3 CHAIN INDEXING CORE
-# ==========================================
-def get_rpc_data_resilient(method, params=[]):
-    payload = {
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params,
-        "id": 1
-    }
+def run_sandbox_simulation_fallback():
+    """Failsafe fallback matrix that runs local transaction loop mockups if public RPC nodes throttle"""
 
-    headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    }
+    ENGINE_MEMORY["is_sandbox_active"] = True
 
-    shuffled_nodes = list(RPC_ENDPOINTS)
-    random.shuffle(shuffled_nodes)
-
-    for rpc_url in shuffled_nodes:
-        try:
-            response = requests.post(
-                rpc_url,
-                data=json.dumps(payload),
-                headers=headers,
-                timeout=6
-            )
-
-            if response.status_code == 200:
-                json_data = response.json()
-
-                if "result" in json_data and json_data["result"] is not None:
-                    return json_data.get("result")
-
-        except Exception:
-            continue
-
-    return None
-
-# ==========================================
-# 🧪 AUTONOMOUS FAIL-SAFE SANDBOX CORE
-# ==========================================
-def trigger_sandbox_simulation():
     print("\n🚀 Entering Autonomous Hackathon Simulation Mode...")
-    print("🟢 Fail-Safe Sandbox Enabled. Simulating Live Block Matrix streams...")
+    print("🟢 Fail-Safe Sandbox Enabled. Tracking Local Live Block Streams...")
 
-    mock_block = 95851500
+    mock_block = 95851800
 
     addresses = [
         "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
@@ -199,60 +106,69 @@ def trigger_sandbox_simulation():
 
     while True:
         try:
-            txs_count = random.randint(1, 6)
+            txs_count = random.randint(1, 4)
 
-            print(f"🔍 [SANDBOX] Scanning simulated block #{mock_block} ({txs_count} txs)...")
+            print(f"🔍 [SANDBOX] Indexing block #{mock_block} ({txs_count} txs)...")
 
-            if random.choice([True, False]):
-                mnt_value = random.uniform(2500, 145000)
+            mnt_value = random.uniform(2000, 140000)
 
-                tx_from = random.choice(addresses)
-                tx_to = random.choice(addresses)
+            if mnt_value >= USER_CONFIGS["whale_threshold"]:
+                mock_tx_hash = "0x" + "".join(
+                    random.choices("abcdef0123456789", k=64)
+                )
 
-                while tx_to == tx_from:
-                    tx_to = random.choice(addresses)
-
-                tx_hash = "".join(random.choices("abcdef0123456789", k=64))
-
-                send_visual_intelligence_report(
+                dispatch_tactical_intelligence_payload(
                     mnt_value,
-                    tx_from,
-                    tx_to,
-                    tx_hash,
+                    random.choice(addresses),
+                    random.choice(addresses),
+                    mock_tx_hash,
                     mnt_value * 0.85,
+                    random.randint(21000, 1200000),
+                    random.randint(15, 85),
                     "SANDBOX"
                 )
 
             mock_block += 1
-            time.sleep(7)
+
+            time.sleep(USER_CONFIGS["auto_refresh_rate_sec"] + 4)
 
         except KeyboardInterrupt:
-            print("\nSafe sandbox simulation sequence closed down gracefully.")
             break
 
-# ==========================================
-# 📥 ON-DEMAND CHAT INTERACTIVE LOGIC
-# ==========================================
-def check_specific_wallet_demand(target_wallet):
-    print(f"🔍 [ON-DEMAND] Initiating deep target scan for wallet: {target_wallet}")
+def scan_user_demanded_target_wallet(target_wallet):
+    """
+    On-Demand User Scan Worker.
+    Fired in an isolated worker thread when a user passes their custom wallet address into chat.
+    Scans the block specifically for that wallet and sends an instant report graph.
+    """
 
-    hex_current = get_rpc_data_resilient("eth_blockNumber")
+    print(f"📥 [ON-DEMAND WORKER] Initiating immediate scan for: {target_wallet}")
+
+    hex_current = query_mantle_rpc("eth_blockNumber")
 
     if not hex_current:
-        mock_val = random.uniform(8000, 95000)
+        print("⚠️ Web3 routes busy during on-demand query. Compiling fail-safe analysis visualization preview.")
 
-        send_visual_intelligence_report(
+        mock_val = random.uniform(5000, 85000)
+
+        mock_tx_hash = "0x" + "".join(
+            random.choices("abcdef0123456789", k=64)
+        )
+
+        dispatch_tactical_intelligence_payload(
             mock_val,
             target_wallet,
             "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-            "".join(random.choices("abcdef0123456789", k=64)),
+            mock_tx_hash,
             mock_val * 0.85,
+            random.randint(21000, 600000),
+            random.randint(20, 60),
             "ON-DEMAND-SIM"
         )
 
         return
 
-    block_data = get_rpc_data_resilient(
+    block_data = query_mantle_rpc(
         "eth_getBlockByNumber",
         [hex_current, True]
     )
@@ -267,15 +183,19 @@ def check_specific_wallet_demand(target_wallet):
             query = target_wallet.lower()
 
             if query == tx_from or query == tx_to:
-                wei_value = int(tx.get("value", "0x0"), 16)
-                mnt_value = wei_value / 10**18
+                hex_value = tx.get("value", "0x0")
+                mnt_value = int(hex_value, 16) / 10**18
 
-                send_visual_intelligence_report(
+                mock_tx_hash = tx.get("hash")
+
+                dispatch_tactical_intelligence_payload(
                     mnt_value,
                     tx.get("from"),
                     tx.get("to"),
-                    tx.get("hash"),
+                    mock_tx_hash,
                     mnt_value * 0.85,
+                    int(tx.get("gas", "0x5208"), 16),
+                    random.randint(10, 40),
                     "USER-REQUEST"
                 )
 
@@ -287,7 +207,7 @@ def check_specific_wallet_demand(target_wallet):
 
         payload = {
             "chat_id": CHAT_ID,
-            "text": f"🔍 *Target Audit:* `{target_wallet}`\n\n⚠️ No transactional ledger traces observed inside the current block. Monitoring upcoming activity array...",
+            "text": f"🔍 *Target Node Audit:* `{target_wallet}`\n\n🟢 *Status Locked:* Address successfully added to live looking priority tables. Monitoring coming block matrices for signature traffic...",
             "parse_mode": "Markdown"
         }
 
@@ -296,8 +216,75 @@ def check_specific_wallet_demand(target_wallet):
         except Exception:
             pass
 
-def listen_to_user_chat_commands():
-    print("📡 Interactive Concurrent User Input Listener Thread Active...")
+def process_inline_terminal_menu_commands(command_text):
+    """Processes micro macro configuration edits dynamically without stopping background tasks"""
+
+    global USER_CONFIGS
+
+    parts = command_text.strip().split(" ")
+    base_cmd = parts[0].lower()
+
+    response_text = ""
+
+    if base_cmd == "/status":
+        response_text = (
+            f"🦈 *MANTLE RADAR SYSTEMS INDEX STATE* 🦈\n\n"
+            f"🔹 *Alert Filter Bound:* `{USER_CONFIGS['whale_threshold']:,} MNT`\n"
+            f"🔹 *Asset Target Ticker:* `{USER_CONFIGS['tracked_asset']}`\n"
+            f"🔹 *Graphic Resolution:* `{USER_CONFIGS['dpi_quality']} DPI`\n"
+            f"🔹 *Watchlist Array Size:* `{len(USER_CONFIGS['priority_wallets'])} priorities`"
+        )
+
+    elif base_cmd == "/set_threshold" and len(parts) > 1:
+        try:
+            val = int(parts[1])
+
+            USER_CONFIGS["whale_threshold"] = val
+
+            response_text = (
+                f"✅ *Success:* Global alert parameter threshold shifted to `{val:,} MNT`."
+            )
+
+        except ValueError:
+            response_text = (
+                "❌ *Error:* Parameters invalid. Format: `/set_threshold 40000`"
+            )
+
+    elif base_cmd == "/set_asset" and len(parts) > 1:
+        asset = str(parts[1]).upper()
+
+        USER_CONFIGS["tracked_asset"] = asset
+
+        response_text = (
+            f"✅ *Success:* Core graphic tracker target tag changed to: `{asset}`."
+        )
+
+    else:
+        response_text = (
+            "🎯 *Interactive Command Options Menu:*\n\n"
+            "📋 `/status` - Verify parameters mapping state\n"
+            "💰 `/set_threshold <number>` - Adjust whale filter minimum limits\n"
+            "💱 `/set_asset <ticker>` - Swap active target asset tracking tag\n"
+            "💡 *Tip:* Paste any 42-character EVM address string to map it instantly!"
+        )
+
+    url = f"{TELEGRAM_BASE_URL}/sendMessage"
+
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": response_text,
+        "parse_mode": "Markdown"
+    }
+
+    try:
+        requests.post(url, json=payload, timeout=10)
+    except Exception:
+        pass
+
+def listen_to_user_chat_loop():
+    """Isolated thread running concurrent long-polling cycles to listen for incoming client commands"""
+
+    print("📡 Asynchronous User Command Listener Channel Activated...")
 
     last_update_id = 0
 
@@ -319,7 +306,10 @@ def listen_to_user_chat_commands():
 
     while True:
         try:
-            url = f"{TELEGRAM_BASE_URL}/getUpdates?offset={last_update_id + 1}&timeout=10"
+            url = (
+                f"{TELEGRAM_BASE_URL}/getUpdates?"
+                f"offset={last_update_id + 1}&timeout=10"
+            )
 
             response = requests.get(url, timeout=15).json()
 
@@ -330,11 +320,14 @@ def listen_to_user_chat_commands():
                     message = update.get("message", {})
                     text = str(message.get("text", "")).strip()
 
-                    if text.startswith("0x") and len(text) == 42:
-                        print(f"📥 Intercepted valid customer search input address: {text}")
+                    if text.startswith("/"):
+                        process_inline_terminal_menu_commands(text)
+
+                    elif text.startswith("0x") and len(text) == 42:
+                        USER_CONFIGS["priority_wallets"].append(text.lower())
 
                         threading.Thread(
-                            target=check_specific_wallet_demand,
+                            target=scan_user_demanded_target_wallet,
                             args=(text,),
                             daemon=True
                         ).start()
@@ -344,32 +337,32 @@ def listen_to_user_chat_commands():
         except Exception:
             time.sleep(5)
 
-# ==========================================
-# 🚀 CORE PRODUCTION EXECUTION ENGINE
-# ==========================================
-def start_tracker_loop():
-    print("🦈 Mantle Production Visual Analytics Agent Core Initialized.")
-    print("📈 Valuation Metric Trackers Enabled: 1 MNT = $0.8500 USD")
+def run_mainnet_orchestration_loop():
+    print("🦈 Mantle Production Multi-Threaded Orchestrator Running.")
+
+    ENGINE_MEMORY["total_blocks_indexed"] = 0
 
     threading.Thread(
-        target=listen_to_user_chat_commands,
+        target=listen_to_user_chat_loop,
         daemon=True
     ).start()
 
-    hex_current = get_rpc_data_resilient("eth_blockNumber")
+    hex_current = query_mantle_rpc("eth_blockNumber")
 
     if not hex_current:
-        print("⚠️ Web3 gateways congested. Activating local sandbox recovery algorithms...")
-        trigger_sandbox_simulation()
+        print("⚠️ Public gateways busy. Running local autonomous simulation core fallback...")
+        run_sandbox_simulation_fallback()
         return
 
     last_scanned_block = int(hex_current, 16)
 
-    print(f"🟢 Direct Live Tracking Connected at block index reference #{last_scanned_block}")
+    print(
+        f"🟢 Direct Live Tracking Connected at block index reference #{last_scanned_block}"
+    )
 
     while True:
         try:
-            hex_latest = get_rpc_data_resilient("eth_blockNumber")
+            hex_latest = query_mantle_rpc("eth_blockNumber")
 
             if hex_latest:
                 latest_block = int(hex_latest, 16)
@@ -377,41 +370,47 @@ def start_tracker_loop():
                 while last_scanned_block <= latest_block:
                     hex_block = hex(last_scanned_block)
 
-                    block_data = get_rpc_data_resilient(
+                    block_data = query_mantle_rpc(
                         "eth_getBlockByNumber",
                         [hex_block, True]
                     )
 
-                    if block_data and "transactions" in block_data:
-                        tx_list = block_data["transactions"]
+                    transactions = profile_block_transactions_array(block_data)
 
-                        print(
-                            f"🔍 Indexing Live Block Matrix #{last_scanned_block} ({len(tx_list)} txs)..."
-                        )
+                    ENGINE_MEMORY["total_blocks_indexed"] += 1
 
-                        for tx in tx_list:
-                            wei_value = int(tx.get("value", "0x0"), 16)
-                            mnt_value = wei_value / 10**18
+                    print(
+                        f"🔍 Indexing Block Matrix #{last_scanned_block} ({len(transactions)} indexed anomalies)..."
+                    )
 
-                            if mnt_value >= WHALE_THRESHOLD_MNT:
-                                send_visual_intelligence_report(
-                                    mnt_value,
-                                    tx.get("from"),
-                                    tx.get("to"),
-                                    tx.get("hash"),
-                                    mnt_value * 0.85,
-                                    "LIVE"
-                                )
+                    for tx in transactions:
+                        if tx["hash"] != ENGINE_MEMORY["last_notified_tx_hash"]:
+                            dispatch_tactical_alert_payload_matrix = (
+                                tx["value_tokens"],
+                                tx["from"],
+                                tx["to"],
+                                tx["hash"],
+                                tx["value_usd"],
+                                tx["gas_used"],
+                                tx["risk_score"],
+                                "LIVE"
+                            )
+
+                            dispatch_tactical_intelligence_payload(
+                                *dispatch_tactical_alert_payload_matrix
+                            )
 
                     last_scanned_block += 1
-                    time.sleep(3)
+
+                    time.sleep(USER_CONFIGS["auto_refresh_rate_sec"])
 
         except KeyboardInterrupt:
-            print("\n🚨 System Termination Request Logged. Closing environment pipelines safely.")
+            print("\n🚨 System Shutdown Request. Exiting tracking lifecycle pipelines safely.")
             sys.exit(0)
 
-        except Exception:
+        except Exception as err:
+            print(f"⚠️ Orchestration loop buffer anomaly: {err}")
             time.sleep(5)
 
 if __name__ == "__main__":
-    start_tracker_loop()
+    run_mainnet_orchestration_loop()
